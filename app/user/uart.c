@@ -271,7 +271,7 @@ LOCAL uint16_t CF = 0;
 LOCAL uint8_t sum = 0;
 
 uint8_t power_num = 0;
-#define TEMP_COUNT 5
+#define TEMP_COUNT 3
 uint16_t voltage_temp[TEMP_COUNT];
 uint16_t power_temp[TEMP_COUNT];
 uint16_t current_temp[TEMP_COUNT];
@@ -435,8 +435,8 @@ uart_recvTask(os_event_t *events) {
 				}
 
 				power_num++;
-				if (power_num > 5) {	//至少获取5组数据后再开始确认功率电压电流数据
-					power_num = 6;
+				if (power_num > TEMP_COUNT) {	//至少获取5组数据后再开始确认功率电压电流数据
+					power_num = TEMP_COUNT+1;
 					//5组数据 去掉最大值及一个最小值后及时平均值
 					voltage_sum = 0;
 					power_sum = 0;

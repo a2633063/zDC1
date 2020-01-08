@@ -190,8 +190,8 @@ bool ICACHE_FLASH_ATTR
 user_io_set_plug_all(int8_t on0, int8_t on1, int8_t on2, int8_t on3) {
 	uint8_t i, val;
 	uint8_t on[4] = { on0, on1, on2, on3 };
-	if (!user_io_read_key(&val))
-		return false;
+//	if (!user_io_read_key(&val))
+//		return false;
 
 	for (i = 0; i < 4; i++) {
 		if (on[i] == -1) {
@@ -205,10 +205,15 @@ user_io_set_plug_all(int8_t on0, int8_t on1, int8_t on2, int8_t on3) {
 		user_config.plug[0].on = 1;
 	}
 
-	val &= 0x0f;
+	val = 0x0f;
 	val = val | (user_config.plug[0].on << 7) | (user_config.plug[1].on << 6) | (user_config.plug[2].on << 5) | (user_config.plug[3].on << 4);
 
 	user_set_led_logo(user_config.plug[0].on);
 	os_printf("set plug %d,%d,%d,%d\n", user_config.plug[0].on, user_config.plug[1].on, user_config.plug[2].on, user_config.plug[3].on);
-	return io_iic_write(0x01, val);
+	if (io_iic_write(0x01, val))
+		return true;
+	else {
+		os_delay_us(300);
+		return io_iic_write(0x01, val);
+	}
 }
