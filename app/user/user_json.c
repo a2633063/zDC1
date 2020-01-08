@@ -204,8 +204,15 @@ void ICACHE_FLASH_ATTR user_json_analysis(bool udp_flag, u8* jsonRoot) {
 					plug_retained = 1;
 				}
 			}
-			if(plug_retained == 1)
-			user_io_set_plug_all(2,2,2,2);
+
+			cJSON_AddNumberToObject(cJSON_GetObjectItem(json_send,"plug_0"), "on", user_config.plug[0].on);
+			cJSON_AddNumberToObject(cJSON_GetObjectItem(json_send,"plug_1"), "on", user_config.plug[1].on);
+			cJSON_AddNumberToObject(cJSON_GetObjectItem(json_send,"plug_2"), "on", user_config.plug[2].on);
+			cJSON_AddNumberToObject(cJSON_GetObjectItem(json_send,"plug_3"), "on", user_config.plug[3].on);
+
+			if (plug_retained == 1) {
+				user_io_set_plug_all(user_config.plug[0].on, user_config.plug[1].on, user_config.plug[2].on, user_config.plug[3].on);
+			}
 
 			cJSON_AddStringToObject(json_send, "name", user_config.name);
 
@@ -257,9 +264,16 @@ json_plug_analysis(int udp_flag, unsigned char x, cJSON * pJsonRoot, cJSON * pJs
 		cJSON *p_plug_on = cJSON_GetObjectItem(p_plug, "on");
 		if (p_plug_on) {
 			if (cJSON_IsNumber(p_plug_on)) {
-				user_config.plug[x].on=p_plug_on->valueint;
+				user_config.plug[x].on = !!(p_plug_on->valueint);
 				//user_io_set_plug(x, p_plug_on->valueint);
 				return_flag = true;
+				if (x > 0 && user_config.plug[x].on == 1) {	//当打开分开关时,自动打开总开关
+					user_config.plug[0].on = 1;
+				}else if (x == 0 && user_config.plug[x].on == 0) {	//当关闭总开关时,关闭所有开关
+					user_config.plug[1].on = 0;
+					user_config.plug[2].on = 0;
+					user_config.plug[3].on = 0;
+				}
 			}
 		}
 
@@ -287,7 +301,7 @@ json_plug_analysis(int udp_flag, unsigned char x, cJSON * pJsonRoot, cJSON * pJs
 		}
 	}
 
-	cJSON_AddNumberToObject(json_plug_send, "on", user_config.plug[x].on);
+//	cJSON_AddNumberToObject(json_plug_send, "on", user_config.plug[x].on);
 
 	cJSON_AddItemToObject(pJsonSend, plug_str, json_plug_send);
 	return return_flag;

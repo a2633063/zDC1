@@ -48,9 +48,10 @@ void ICACHE_FLASH_ATTR user_os_timer_func(void *arg) {
 
 					uint8_t repeat = user_config.plug[i].task[j].repeat;
 					if (    //符合条件则改变继电器状态: 秒为0 时分符合设定值, 重复符合设定值
-					time.second == 0 && time.minute == user_config.plug[i].task[j].minute && time.hour == user_config.plug[i].task[j].hour && ((repeat == 0x00) || repeat & (1 << (time.week - 1)))) {
+					time.second == 0 && time.minute == user_config.plug[i].task[j].minute && time.hour == user_config.plug[i].task[j].hour
+							&& ((repeat == 0x00) || repeat & (1 << (time.week - 1)))) {
 						if (user_config.plug[i].on != user_config.plug[i].task[j].action) {
-							user_config.plug[i].on=user_config.plug[i].task[j].action;
+							user_config.plug[i].on = user_config.plug[i].task[j].action;
 							//user_io_set_plug(i, user_config.plug[i].task[j].action);
 							update_user_config_flag = true;
 						}
@@ -59,6 +60,9 @@ void ICACHE_FLASH_ATTR user_os_timer_func(void *arg) {
 							user_config.plug[i].task[j].on = 0;
 							update_user_config_flag = true;
 						}
+						if (i > 0 && user_config.plug[i].on == 1)
+							user_config.plug[0].on = 1;
+
 					}
 				}
 			}
@@ -67,9 +71,9 @@ void ICACHE_FLASH_ATTR user_os_timer_func(void *arg) {
 		//更新储存数据 更新定时任务数据
 		if (update_user_config_flag == true) {
 			os_printf("update_user_config_flag");
+			user_io_set_plug_all(2, 2, 2, 2);
 			user_setting_set_config();
 			update_user_config_flag = false;
-			user_io_set_plug_all(2,2,2,2);
 
 			cJSON *json_send = cJSON_CreateObject();
 			cJSON_AddStringToObject(json_send, "mac", strMac);
