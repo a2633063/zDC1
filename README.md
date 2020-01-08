@@ -103,7 +103,7 @@
 
 ## 拆机接线及烧录固件相关
 
-见[固件烧录](https://github.com/a2633063/zDC1_public/wiki/固件烧录)
+见[固件烧录](https://github.com/a2633063/zDC1/wiki/固件烧录)
 
 烧录固件完成后,即可开始使用
 
@@ -111,13 +111,13 @@
 
 ## 开始使用/使用方法
 
-见[开始使用](https://github.com/a2633063/zDC1_public/wiki/开始使用)
+见[开始使用](https://github.com/a2633063/zDC1/wiki/开始使用)
 
 
 
 ## 接入home assistant
 
-见[homeassistant接入](https://github.com/a2633063/zDC1_public/wiki/homeassistant接入)
+见[homeassistant接入](https://github.com/a2633063/zDC1/wiki/homeassistant接入)
 
 
 
@@ -133,7 +133,7 @@
 
 所有通信协议开源,你可以自己开发控制app或ios端
 
-见[通信协议](https://github.com/a2633063/zDC1_public/wiki/通信协议)
+见[通信协议](https://github.com/a2633063/zDC1/wiki/通信协议)
 
 
 
