@@ -48,3 +48,15 @@ user_udp_send(uint8_t *s) {
 		espconn_send(&ptrespconn, s, os_strlen(s));	//发送数据
 	}
 }
+
+//void ICACHE_FLASH_ATTR
+//user_udp_send_debug(int port,uint8_t *s) {
+//	if (wifi_station_get_connect_status() == STATION_GOT_IP || wifi_softap_get_station_num() > 0) {
+//		ptrespconn.proto.udp->remote_port = port;	//获取端口
+//		ptrespconn.proto.udp->remote_ip[0] = 255;	//获取IP地址
+//		ptrespconn.proto.udp->remote_ip[1] = 255;
+//		ptrespconn.proto.udp->remote_ip[2] = 255;
+//		ptrespconn.proto.udp->remote_ip[3] = 255;
+//		espconn_send(&ptrespconn, s, os_strlen(s));	//发送数据
+//	}
+//}

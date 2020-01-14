@@ -271,7 +271,7 @@ LOCAL uint16_t CF = 0;
 LOCAL uint8_t sum = 0;
 
 uint8_t power_num = 0;
-#define TEMP_COUNT 3
+#define TEMP_COUNT 10
 uint16_t voltage_temp[TEMP_COUNT];
 uint16_t power_temp[TEMP_COUNT];
 uint16_t current_temp[TEMP_COUNT];
@@ -396,39 +396,41 @@ uart_recvTask(os_event_t *events) {
 				if (sum != d_tmp)
 					break;
 
+//				os_sprintf(tmp, "[%02x] % 4d % 4d % 4d [%02x]   [%d,%d]\r\n", head, Uk / Ut, Pk * 10 / Pt, Ik * 100 / It, Adj,Pk,Pt);
+//				user_udp_send_debug(10180, tmp);
+
 				if (head != 0x55 && ((head & 0xfc) != 0xf0)) {
 //					os_sprintf(tmp, "voltage=%03d,current=%03d,power=% 4d  head=0x%02x,Uk=% 9d,Ut=% 9d,Ik=% 9d,It=% 9d,Pk=% 9d,Pt=% 9d,Adj=0x%02x\n",
 //							voltage, current, power, head, Uk, Ut, Ik, It, Pk, Pt, Adj);
 //					user_send(true, tmp);
 					break;
 				}
-
 				if (Adj & 0x40) {
-					for (i = 0; i < TEMP_COUNT - 1; i++) {
-						voltage_temp[i + 1] = voltage_temp[i];
+					for (i = TEMP_COUNT - 1; i > 0; i--) {
+						voltage_temp[i] = voltage_temp[i - 1];
 					}
 
 					voltage_temp[0] = Uk / Ut;	//电压
 				}
 
-				if (Adj & 0x10) {
-
-					for (i = 0; i < TEMP_COUNT - 1; i++) {
-						power_temp[i + 1] = power_temp[i];
+//				if (Adj & 0x10)
+				{
+					for (i = TEMP_COUNT - 1; i > 0; i--) {
+						power_temp[i] = power_temp[i - 1];
 					}
 
-					if ((head & 0xf2) == 0xf2)
+					if ((head & 0x02) == 0x02)
 						power_temp[0] = 0;
 					else
-						power_temp[0] = Pk * 10 / Pt;	//功率(扩大100)
+						power_temp[0] = Pk * 10 / Pt;	//功率(扩大10)
 				}
 
 				if (Adj & 0x20) {
-					for (i = 0; i < TEMP_COUNT - 1; i++) {
-						current_temp[i + 1] = current_temp[i];
+					for (i = TEMP_COUNT - 1; i > 0; i--) {
+						current_temp[i] = current_temp[i - 1];
 					}
 
-					if (power > 0)
+					if (power_temp[0] > 0)
 						current_temp[0] = Ik * 100 / It;	//电流(扩大100)
 					else
 						current_temp[0] = 0;
@@ -436,7 +438,7 @@ uart_recvTask(os_event_t *events) {
 
 				power_num++;
 				if (power_num > TEMP_COUNT) {	//至少获取5组数据后再开始确认功率电压电流数据
-					power_num = TEMP_COUNT+1;
+					power_num = TEMP_COUNT + 1;
 					//5组数据 去掉最大值及一个最小值后及时平均值
 					voltage_sum = 0;
 					power_sum = 0;
@@ -467,11 +469,17 @@ uart_recvTask(os_event_t *events) {
 					voltage = (voltage_sum - voltage_max - voltage_min) / (TEMP_COUNT - 2);
 					power = (power_sum - power_max - power_min) / (TEMP_COUNT - 2);
 					current = (current_sum - current_max - current_min) / (TEMP_COUNT - 2);
+					if (voltage == 0) {
+						power = 0;
+						current = 0;
+					}
+
+					if (power == 0) {
+						current = 0;
+					}
 				}
 
-//				os_sprintf(tmp, "voltage=%03d,current=%03d,power=% 4d  head=0x%02x,Uk=% 9d,Ut=% 9d,Ik=% 9d,It=% 9d,Pk=% 9d,Pt=% 9d,Adj=0x%02x\n",
-//						voltage, current, power, head, Uk, Ut, Ik, It, Pk, Pt, Adj);
-//				user_send(true, tmp);
+
 
 			}
 				break;

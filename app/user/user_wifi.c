@@ -158,6 +158,12 @@ void ICACHE_FLASH_ATTR user_wifi_init(void) {
 }
 
 void ICACHE_FLASH_ATTR user_smartconfig(void) {
+
+	if(wifi_get_opmode() == SOFTAP_MODE){
+		os_printf("SoftAP,no smartconfig");
+		return;
+	}
+
 	//设置为station模式
 	if (wifi_get_opmode() != STATION_MODE || wifi_get_opmode_default() != STATION_MODE) {
 		wifi_set_opmode(STATION_MODE);
