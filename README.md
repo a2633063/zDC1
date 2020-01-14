@@ -79,7 +79,7 @@
 - 烧录固件需要烧录器:一般的ttl串口烧录器即可,一般刷机的人应该都有,淘宝价格大概为2-5元
 - 使用此固件,需要app端配合,见[SmartControl_Android_MQTT](https://github.com/a2633063/SmartControl_Android_MQTT).
 - app只有android,因ios限制,本人不考虑免费做ios开发.(不要再问是否有ios端).
-- 有人测试从esphome可以直接ota到我的固件,本人未做测试,需要的可以试试看:[从esphome升级到zdc1固件](https://github.com/a2633063/zDC1_public/wiki/固件烧录#从esphome升级到zdc1固件)
+- 有人测试从esphome可以直接ota到我的固件,本人未做测试,需要的可以试试看:[从esphome升级到zdc1固件](https://github.com/a2633063/zDC1/wiki/固件烧录#从esphome升级到zdc1固件)
 
 > 虽然没有ios端,但固件支持homeassistant,可以使用安卓APP配置完成后,连入homeassistant后,使用ios控制. APP主要仅为第一次使用配对网络及配置mqtt服务器时使用,之后可以用homeassistant控制不再使用app.
 
@@ -103,7 +103,7 @@
 
 ## 拆机接线及烧录固件相关
 
-见[固件烧录](https://github.com/a2633063/zDC1_public/wiki/固件烧录)
+见[固件烧录](https://github.com/a2633063/zDC1/wiki/固件烧录)
 
 烧录固件完成后,即可开始使用
 
@@ -111,13 +111,13 @@
 
 ## 开始使用/使用方法
 
-见[开始使用](https://github.com/a2633063/zDC1_public/wiki/开始使用)
+见[开始使用](https://github.com/a2633063/zDC1/wiki/开始使用)
 
 
 
 ## 接入home assistant
 
-见[homeassistant接入](https://github.com/a2633063/zDC1_public/wiki/homeassistant接入)
+见[homeassistant接入](https://github.com/a2633063/zDC1/wiki/homeassistant接入)
 
 
 
@@ -133,7 +133,7 @@
 
 所有通信协议开源,你可以自己开发控制app或ios端
 
-见[通信协议](https://github.com/a2633063/zDC1_public/wiki/通信协议)
+见[通信协议](https://github.com/a2633063/zDC1/wiki/通信协议)
 
 
 
