@@ -22,10 +22,14 @@ char strIP[16];
 LOCAL unsigned char user_smarconfig_flag = 0;	//smarconfig标志位,防止smarconfig出错
 
 struct mdns_info info;
+char mdns_strName[32] = { 0 };
 char mdns_data[32]= { 0 };
 void user_mdns_config(uint32 ip) {
 	os_printf("user_mdns_config %x\n",ip);
-	info.host_name = TYPE_NAME;
+
+
+	os_sprintf(mdns_strName, MDNS_DEVICE_NAME,strMac);
+	info.host_name = mdns_strName;
 	info.ipAddr = ip; //ESP8266 station IP
 	info.server_name = "zcontrol";
 	info.server_port = 10182;

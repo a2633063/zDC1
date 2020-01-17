@@ -9,6 +9,7 @@
 #define TYPE_NAME "zDC1"
 
 #define DEVICE_NAME "zDC1_%02X%02X"
+#define MDNS_DEVICE_NAME "zDC1_%s"
 
 #define USER_CONFIG_VERSION 4
 
