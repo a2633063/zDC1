@@ -21,6 +21,20 @@ char strIP[16];
 
 LOCAL unsigned char user_smarconfig_flag = 0;	//smarconfig标志位,防止smarconfig出错
 
+struct mdns_info info;
+char mdns_data[32]= { 0 };
+void user_mdns_config(uint32 ip) {
+	os_printf("user_mdns_config %x\n",ip);
+	info.host_name = TYPE_NAME;
+	info.ipAddr = ip; //ESP8266 station IP
+	info.server_name = "zcontrol";
+	info.server_port = 10182;
+	//info.txt_data[0] = "version = "VERSION;
+	os_sprintf(mdns_data, "mac = %s", strMac);
+	info.txt_data[0] = mdns_data;
+	espconn_mdns_init(&info);
+
+}
 //wifi event 回调函数
 void wifi_handle_event_cb(System_Event_t *evt) {
 	switch (evt->event) {
@@ -35,11 +49,12 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 		os_printf("wifi change mode: %d -> %d\n", evt->event_info.auth_change.old_mode, evt->event_info.auth_change.new_mode);
 		break;
 	case EVENT_STAMODE_GOT_IP:
-//		os_printf("wifi got ip:" IPSTR ",mask:" IPSTR ",gw:" IPSTR, IP2STR(&evt->event_info.got_ip.ip),
-//				IP2STR(&evt->event_info.got_ip.mask), IP2STR(&evt->event_info.got_ip.gw));
-//		os_printf("\n");
+		os_printf("wifi got ip:" IPSTR ",mask:" IPSTR ",gw:" IPSTR, IP2STR(&evt->event_info.got_ip.ip),
+				IP2STR(&evt->event_info.got_ip.mask), IP2STR(&evt->event_info.got_ip.gw));
+		os_printf("\n");
 		os_sprintf(strIP, IPSTR, IP2STR(&evt->event_info.got_ip.ip));
 		wifi_status_led_uninstall();
+		user_mdns_config(evt->event_info.got_ip.ip.addr);
 		user_set_led_wifi(1);
 
 		user_mqtt_connect();	//连接MQTT服务器
