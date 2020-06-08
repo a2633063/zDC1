@@ -113,11 +113,13 @@ void ICACHE_FLASH_ATTR user_json_analysis(bool udp_flag, u8* jsonRoot) {
 				cJSON *p_setting_wifi_password = cJSON_GetObjectItem(p_setting, "wifi_password");
 				if (p_setting_wifi_ssid && cJSON_IsString(p_setting_wifi_ssid) && p_setting_wifi_password
 						&& cJSON_IsString(p_setting_wifi_password)) {
-					struct station_config stationConf;
-					stationConf.bssid_set = 0; //need not check MAC address of AP
-					os_sprintf(stationConf.ssid, p_setting_wifi_ssid->valuestring);
-					os_sprintf(stationConf.password, p_setting_wifi_password->valuestring);
-					wifi_station_set_config(&stationConf);
+
+					user_wifi_set(p_setting_wifi_ssid->valuestring,p_setting_wifi_password->valuestring);
+//					struct station_config stationConf;
+//					stationConf.bssid_set = 0; //need not check MAC address of AP
+//					os_sprintf(stationConf.ssid, p_setting_wifi_ssid->valuestring);
+//					os_sprintf(stationConf.password, p_setting_wifi_password->valuestring);
+//					wifi_station_set_config(&stationConf);
 				}
 
 				//…Ë÷√mqtt ip
@@ -191,8 +193,7 @@ void ICACHE_FLASH_ATTR user_json_analysis(bool udp_flag, u8* jsonRoot) {
 
 				if ((p_mqtt_ip && cJSON_IsString(p_mqtt_ip) && p_mqtt_port && cJSON_IsNumber(p_mqtt_port) && p_mqtt_user
 						&& cJSON_IsString(p_mqtt_user) && p_mqtt_password && cJSON_IsString(p_mqtt_password) && !user_mqtt_is_connect())
-						|| (p_setting_wifi_ssid && cJSON_IsString(p_setting_wifi_ssid) && p_setting_wifi_password
-								&& cJSON_IsString(p_setting_wifi_password))) {
+						) {
 					system_restart();
 				}
 			}
