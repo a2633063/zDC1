@@ -11,7 +11,7 @@
 #define DEVICE_NAME "zDC1_%02X%02X"
 #define MDNS_DEVICE_NAME "zDC1_%s"
 
-#define USER_CONFIG_VERSION 4
+#define USER_CONFIG_VERSION 5
 
 #define SETTING_MQTT_STRING_LENGTH_MAX  64      //必须 4 字节对齐。
 #define PLUG_NAME_LENGTH 32		//插座名称字符串最大长度
@@ -41,6 +41,7 @@ typedef struct {
 	uint8_t mqtt_password[SETTING_MQTT_STRING_LENGTH_MAX];     //mqtt service user
 	user_plug_config_t plug[PLUG_NUM];
 	char version;
+    uint8_t interval;   //上报频率
 } user_config_t;
 
 extern char rtc_init;

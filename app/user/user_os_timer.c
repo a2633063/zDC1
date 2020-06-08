@@ -23,6 +23,7 @@ LOCAL os_timer_t timer_rtc;
 
 uint32 utc_time = 0;
 void ICACHE_FLASH_ATTR user_os_timer_func(void *arg) {
+	static uint8_t timer_count = 0;
 	uint8_t DeviceBuffer[28] = { 0 };
 	int8_t task_flag[PLUG_NUM] = { -1, -1, -1, -1 };   //记录每个插座哪个任务需要返回数据
 	uint8_t i, j;
@@ -114,8 +115,12 @@ void ICACHE_FLASH_ATTR user_os_timer_func(void *arg) {
 		}
 
 	}
-	user_send_power();
 
+	timer_count++;
+	if (timer_count >= user_config.interval) {
+		timer_count = 0;
+		user_send_power();
+	}
 }
 
 void ICACHE_FLASH_ATTR

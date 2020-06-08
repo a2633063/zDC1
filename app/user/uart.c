@@ -421,8 +421,11 @@ uart_recvTask(os_event_t *events) {
 
 					if ((head & 0x02) == 0x02)
 						power_temp[0] = 0;
-					else
+					else {
 						power_temp[0] = Pk * 10 / Pt;	//¹¦ÂÊ(À©´ó10)
+						if (power_temp[0] > 25000)
+							power_temp[0] = 0;
+					}
 				}
 
 				if (Adj & 0x20) {
@@ -478,8 +481,6 @@ uart_recvTask(os_event_t *events) {
 						current = 0;
 					}
 				}
-
-
 
 			}
 				break;

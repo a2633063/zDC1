@@ -82,6 +82,17 @@ void ICACHE_FLASH_ATTR user_json_analysis(bool udp_flag, u8* jsonRoot) {
 				}
 			}
 
+			//设置上报频率
+			cJSON *p_interval = cJSON_GetObjectItem(pJsonRoot, "interval");
+			if (p_interval) {
+				if (cJSON_IsNumber(p_interval) && p_interval->valueint > 0 && p_interval->valueint <= 255) {
+					user_config.interval = p_interval->valueint;
+					update_user_config_flag = true;
+				}
+				cJSON_AddNumberToObject(json_send, "interval", user_config.interval);
+			}
+
+
 			cJSON *p_setting = cJSON_GetObjectItem(pJsonRoot, "setting");
 			if (p_setting) {
 
@@ -114,7 +125,7 @@ void ICACHE_FLASH_ATTR user_json_analysis(bool udp_flag, u8* jsonRoot) {
 				if (p_setting_wifi_ssid && cJSON_IsString(p_setting_wifi_ssid) && p_setting_wifi_password
 						&& cJSON_IsString(p_setting_wifi_password)) {
 
-					user_wifi_set(p_setting_wifi_ssid->valuestring,p_setting_wifi_password->valuestring);
+					user_wifi_set(p_setting_wifi_ssid->valuestring, p_setting_wifi_password->valuestring);
 //					struct station_config stationConf;
 //					stationConf.bssid_set = 0; //need not check MAC address of AP
 //					os_sprintf(stationConf.ssid, p_setting_wifi_ssid->valuestring);
@@ -192,8 +203,7 @@ void ICACHE_FLASH_ATTR user_json_analysis(bool udp_flag, u8* jsonRoot) {
 				cJSON_AddItemToObject(json_send, "setting", json_setting_send);
 
 				if ((p_mqtt_ip && cJSON_IsString(p_mqtt_ip) && p_mqtt_port && cJSON_IsNumber(p_mqtt_port) && p_mqtt_user
-						&& cJSON_IsString(p_mqtt_user) && p_mqtt_password && cJSON_IsString(p_mqtt_password) && !user_mqtt_is_connect())
-						) {
+						&& cJSON_IsString(p_mqtt_user) && p_mqtt_password && cJSON_IsString(p_mqtt_password) && !user_mqtt_is_connect())) {
 					system_restart();
 				}
 			}
@@ -206,10 +216,10 @@ void ICACHE_FLASH_ATTR user_json_analysis(bool udp_flag, u8* jsonRoot) {
 				}
 			}
 
-			cJSON_AddNumberToObject(cJSON_GetObjectItem(json_send,"plug_0"), "on", user_config.plug[0].on);
-			cJSON_AddNumberToObject(cJSON_GetObjectItem(json_send,"plug_1"), "on", user_config.plug[1].on);
-			cJSON_AddNumberToObject(cJSON_GetObjectItem(json_send,"plug_2"), "on", user_config.plug[2].on);
-			cJSON_AddNumberToObject(cJSON_GetObjectItem(json_send,"plug_3"), "on", user_config.plug[3].on);
+			cJSON_AddNumberToObject(cJSON_GetObjectItem(json_send, "plug_0"), "on", user_config.plug[0].on);
+			cJSON_AddNumberToObject(cJSON_GetObjectItem(json_send, "plug_1"), "on", user_config.plug[1].on);
+			cJSON_AddNumberToObject(cJSON_GetObjectItem(json_send, "plug_2"), "on", user_config.plug[2].on);
+			cJSON_AddNumberToObject(cJSON_GetObjectItem(json_send, "plug_3"), "on", user_config.plug[3].on);
 
 			if (plug_retained == 1) {
 				user_io_set_plug_all(user_config.plug[0].on, user_config.plug[1].on, user_config.plug[2].on, user_config.plug[3].on);
@@ -270,7 +280,7 @@ json_plug_analysis(int udp_flag, unsigned char x, cJSON * pJsonRoot, cJSON * pJs
 				return_flag = true;
 				if (x > 0 && user_config.plug[x].on == 1) {	//当打开分开关时,自动打开总开关
 					user_config.plug[0].on = 1;
-				}else if (x == 0 && user_config.plug[x].on == 0) {	//当关闭总开关时,关闭所有开关
+				} else if (x == 0 && user_config.plug[x].on == 0) {	//当关闭总开关时,关闭所有开关
 					user_config.plug[1].on = 0;
 					user_config.plug[2].on = 0;
 					user_config.plug[3].on = 0;
