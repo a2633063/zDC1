@@ -176,6 +176,7 @@ void ICACHE_FLASH_ATTR user_wifi_set(char *ssid, char *pass) {
 	os_timer_arm(&mdns_restart_timer, 1000, 0); //1000ms后重启
 }
 void ICACHE_FLASH_ATTR user_wifi_init(void) {
+	int i;
 	//设置为station模式
 	if (wifi_get_opmode() != STATION_MODE || wifi_get_opmode_default() != STATION_MODE) {
 		wifi_set_opmode(STATION_MODE);
@@ -197,7 +198,11 @@ void ICACHE_FLASH_ATTR user_wifi_init(void) {
 	os_sprintf(strName, DEVICE_NAME, hwaddr[4], hwaddr[5]);
 	wifi_station_set_hostname(strName);
 
-	if (gpio16_input_get()) {
+	struct station_config config[5];
+	i = wifi_station_get_ap_info(config);
+	os_printf("wifi info : %d \n", i);
+
+	if (gpio16_input_get() && i > 0) {
 		user_mqtt_init();
 	} else {	//按住按键开机,为热点模式
 		wifi_status_led_uninstall();
@@ -205,7 +210,7 @@ void ICACHE_FLASH_ATTR user_wifi_init(void) {
 		user_set_led_logo(1);
 
 		uint32 io_info[][3] = { { GPIO_WIFI_LED_IO_MUX, GPIO_WIFI_LED_IO_FUNC, GPIO_WIFI_LED_IO_NUM } };
-		uint32 pwm_duty_init[1] = {11111111};
+		uint32 pwm_duty_init[1] = { 11111111 };
 		pwm_init(1000000, pwm_duty_init, 1, io_info);
 		os_printf("pwm_init\n");
 		pwm_start();
@@ -260,7 +265,8 @@ void ICACHE_FLASH_ATTR user_smartconfig(void) {
 void ICACHE_FLASH_ATTR user_smartconfig_stop(void) {
 	if (wifi_states == STATE_WIFI_SMARTCONFIG) {
 		smartconfig_stop();
-		wifi_states = STATE_WIFI_STAMODE_IDE;
+		if (wifi_states == STATE_WIFI_SMARTCONFIG)
+			wifi_states = STATE_WIFI_STAMODE_IDE;
 		os_printf("smartconfig stop");
 		wifi_status_led_uninstall();
 		user_set_led_wifi(0);
@@ -269,5 +275,5 @@ void ICACHE_FLASH_ATTR user_smartconfig_stop(void) {
 }
 
 bool ICACHE_FLASH_ATTR user_smartconfig_is_starting() {
-	return wifi_states == STATE_WIFI_STAMODE_IDE;
+	return wifi_states == STATE_WIFI_SMARTCONFIG;
 }

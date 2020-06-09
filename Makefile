@@ -23,7 +23,7 @@ else
 endif
 
 BOOT?=new
-APP?=1
+APP?=2
 SPI_SPEED?=40
 SPI_MODE?=QIO
 SPI_SIZE_MAP?=2
