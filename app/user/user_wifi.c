@@ -159,6 +159,8 @@ void ICACHE_FLASH_ATTR user_wifi_AP() {
 struct station_config wifi_set_stationConf;
 void ICACHE_FLASH_ATTR user_wifi_set(char *ssid, char *pass) {
 
+	os_printf("user_wifi_set ssid:%s\n", ssid);
+	os_printf("user_wifi_set password:%s\n", pass);
 	wifi_set_stationConf.bssid_set = 0; //need not check MAC address of AP
 	os_memcpy(&wifi_set_stationConf.ssid, ssid, 32);
 	os_memcpy(&wifi_set_stationConf.password, pass, 64);

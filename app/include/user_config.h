@@ -3,7 +3,7 @@
 
 #include "os_type.h"
 
-#define VERSION "v1.3.1"
+#define VERSION "v1.3.2"
 
 #define TYPE 2
 #define TYPE_NAME "zDC1"

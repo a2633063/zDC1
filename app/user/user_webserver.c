@@ -19,6 +19,61 @@ extern const unsigned char wifisuccess[0x9BC];
 
 LOCAL void ICACHE_FLASH_ATTR data_send(void *arg, bool responseOK, char *psend);
 
+LOCAL int ICACHE_FLASH_ATTR char2hex(char c) {
+	if (c >= '0' && c <= '9')
+		return c - '0';
+	else if (c >= 'A' && c <= 'F')
+		return c - 'A' + 0xA;
+	else if (c >= 'a' && c <= 'f')
+		return c - 'a' + 0xa;
+
+	return -1;
+}
+/*
+ * html_decode html字符反转义,将类似%40转换为对应特殊字符@
+ * old: 需要反转义的字符串指针
+ * new: 反转义后的字符串指针
+ */
+LOCAL void ICACHE_FLASH_ATTR html_decode(char *old, char *new) {
+	int i, c1, c2;
+	char *old_p;
+	char *new_p;
+
+	if (old == NULL || new == NULL || *old == '\0')
+		return;
+
+	old_p = old;
+	new_p = new;
+
+	os_printf("html_decode:%s\n\t ", old);
+	while (1) {
+//		os_printf("%c  ", *old_p);
+		if (*old_p == 0) {
+			*new_p='\0';
+			break;
+		}
+		if (*old_p == '%') {
+			old_p++;
+			c1 = char2hex(*old_p);
+			old_p++;
+			c2 = char2hex(*old_p);
+
+			if (c1 == -1 || c2 == -1) {
+				*new_p = '\0';
+				os_printf("c1:%x\tc2:%x\n\t ", c1,c2);
+				return;
+			}
+			*new_p = ((c1 << 4) | c2);
+			new_p++;
+		} else {
+			*new_p = *old_p;
+			new_p++;
+		}
+		old_p++;
+	}os_printf("\n", old);
+
+}
+
 void ICACHE_FLASH_ATTR web_send_wifisetting_page(void *arg, URL_Frame *purl_frame) {
 	struct espconn *ptrespconn = arg;
 	data_send(ptrespconn, true, wifisetting);
@@ -34,8 +89,12 @@ void ICACHE_FLASH_ATTR web_send_result_page(void *arg, URL_Frame *purl_frame) {
 	char *pbufer = NULL;
 	char ssid[32] = { 0 };
 	char password[64] = { 0 };
+	char ssid_encoded[32] = { 0 };
+	char password_encoded[64] = { 0 };
 	os_memset(ssid, 0, 32);
 	os_memset(password, 0, 64);
+	os_memset(ssid_encoded, 0, 32);
+	os_memset(password_encoded, 0, 64);
 
 	struct station_config stationConf;
 	if (purl_frame == NULL) {
@@ -57,7 +116,9 @@ void ICACHE_FLASH_ATTR web_send_result_page(void *arg, URL_Frame *purl_frame) {
 	if (length > 31)
 		goto Error;
 
-	os_memcpy(ssid, pbufer, length);
+	os_memcpy(ssid_encoded, pbufer, length);
+	html_decode(ssid_encoded,ssid);
+	os_printf("ssid_encoded:%s\n", ssid_encoded);
 	os_printf("ssid:%s\n", ssid);
 
 	//获取PASSWORD
@@ -74,8 +135,10 @@ void ICACHE_FLASH_ATTR web_send_result_page(void *arg, URL_Frame *purl_frame) {
 		if (length > 63)
 			goto Error;
 
-		os_memcpy(password, pbufer, length);
+		os_memcpy(password_encoded, pbufer, length);
+		html_decode(password_encoded,password);
 	}
+	os_printf("password_encoded:%s\n", password_encoded);
 	os_printf("password:%s\n", password);
 
 	data_send(ptrespconn, true, wifisuccess);
