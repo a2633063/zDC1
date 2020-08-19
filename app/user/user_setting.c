@@ -17,7 +17,7 @@
 void ICACHE_FLASH_ATTR
 user_setting_init(void) {
 
-	uint8_t val[SETTING_MQTT_STRING_LENGTH_MAX];
+
 	int16_t i, j;
 	user_setting_get_config();
 

@@ -14,7 +14,6 @@
 #include "user_setting.h"
 #include "user_function.h"
 
-uint32 last_time = 0;
 
 bool ICACHE_FLASH_ATTR json_plug_analysis(int udp_flag, unsigned char x, cJSON * pJsonRoot, cJSON * pJsonSend);
 bool ICACHE_FLASH_ATTR json_plug_task_analysis(unsigned char x, unsigned char y, cJSON * pJsonRoot, cJSON * pJsonSend);
